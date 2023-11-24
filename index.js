@@ -1,4 +1,3 @@
-
 class ProductManager {
     constructor() {
         // Inicializa la lista de productos.
@@ -8,34 +7,28 @@ class ProductManager {
     static id = 0;
 
     // Método para agregar productos con validación de código único.
-    addProducts(title, description, price, stock, code, image) {
+    addProduct(title, description, price, stock, code, image) {
         // Validación: Verifica si el código del producto ya existe en la lista.
-        for (let i = 0; i < this.products.length; i++) {
-            if (this.products[i].code === code) {
-                return console.log(`El código ${code} se está repitiendo`);
-            }
+        const codeExists = this.products.find(product => product.code === code);
+        if (codeExists) {
+            throw new Error(`El código ${code} se está repitiendo`);
         }
 
-        // Crea un nuevo objeto de producto.
-        const nuevosProducts = {
-            title,
-            description,
-            price,
-            stock,
-            code,
-            image,
-        };
-
         // Validación: Verifica que no haya campos undefined en el nuevo producto.
-        if (!Object.values(nuevosProducts).includes(undefined)) {
+        if (title && description && price && stock && code && image) {
             // Incrementa el ID estático y agrega el nuevo producto a la lista.
             ProductManager.id++;
             this.products.push({
-                ...nuevosProducts,
-                id: ProductManager.id
+                id: ProductManager.id,
+                title,
+                description,
+                price,
+                stock,
+                code,
+                image
             });
         } else {
-            console.log("Todos los campos son requeridos.");
+            throw new Error("Todos los campos son requeridos.");
         }
     }
 
@@ -45,16 +38,11 @@ class ProductManager {
     }
 
     // Método para buscar un producto por su ID.
-    productFound(id) {
-        return this.products.find((product) => product.id === id);
-    }
-
-    // Método para obtener un producto por su ID con validación.
-    getProductosById(id) {
-        const product = this.productFound(id);
-        // Validación: Si el producto no se encuentra, muestra un mensaje.
+    getProductById(id) {
+        const product = this.products.find(product => product.id === id);
+        // Validación: Si el producto no se encuentra, lanza un error.
         if (!product) {
-            console.log("No se encuentra el producto");
+            throw new Error("No se encuentra el producto");
         } else {
             return product;
         }
@@ -64,19 +52,32 @@ class ProductManager {
 // Crear una instancia de la clase ProductManager.
 const productos = new ProductManager();
 
-// Agregar productos de ejemplo.
-productos.addProducts('SLP Bicicleta SLP MTB 10Pro R29', 'Su ligero cuadro de aluminio, frenos a disco y equipamiento Shimano ofrecen un rendimiento excepcional. Prepárate para conquistar nuevos desafíos y disfrutar de una experiencia de conducción sin igual.', 245789, 5, "acb4532", "image1");
+// Prueba 1: Se llamará “getProducts” recién creada la instancia, debe devolver un arreglo vacío [].
+const productsEmpty = productos.getProducts();
+console.log("Prueba 1:", productsEmpty);
 
-productos.addProducts('TopMega Bicicleta MTB Totem Talle M R29 21 v', 'Bicicleta Mountain Bike TOTEM; rodado 29 con 21 velocidades; suspensión delantera; frenos a disco; cuadro de Aluminio, cambios Shimano Con un diseño versátil y audaz, buscamos ser un recurso eficiente para todos aquellos que nos eligen. Apuntamos al desarrollo con la mayor durabilidad, accesibilidad y seguridad existente en el mercado actual.', 245789, 5, "acb4533", "image2");
+// Prueba 2: Se llamará al método “addProduct” con ciertos campos y se verificará que se agregue satisfactoriamente.
+productos.addProduct("producto prueba", "Este es un producto prueba", 200, 25, "abc123", "Sin imagen");
 
-productos.addProducts('SLP Bicicleta Mountain Bike SLP 5PRO Rodado 29" Talle 20', 'Desafiá tus capacidades Las mountain bikes, o bicicletas de montaña son el medio de transporte perfecto para tus aventuras y alcanzar aquellos lugares recónditos que querés conocer. Sus materiales y diseños están pensados para la acción, son resistentes y cuentan con mejor maniobrabilidad que otros modelos brindándote mayor tracción. Además, sus llantas con dibujos marcados favorecen el agarre en terrenos difíciles.', 234611, 5, "acb4534", "image3");
+// Prueba 3: Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado.
+const productsAfterAdd = productos.getProducts();
+console.log("Prueba 3:", productsAfterAdd);
 
-productos.addProducts('Peretti Bicicleta Peretti Cross Rodado 20 Verde', '¡Descubre la bicicleta perfecta para los pequeños aventureros con la PERETTI CROSS VARÓN! Diseñada pensando en la diversión y seguridad, esta bicicleta para niños es una opción única y emocionante para sus primeras pedaleadas.', 129437, 5, "acb4535", "image4");
+// Prueba 4: Se llamará al método “addProduct” con los mismos campos de arriba, debe arrojar un error porque el código estará repetido.
+try {
+    productos.addProduct("producto prueba", "Este es un producto prueba", 200, 25, "abc123", "Sin imagen");
+} catch (error) {
+    console.log("Prueba 4:", error.message);
+}
 
-productos.addProducts('Bicicleta Mountain Bike Rodado 29 Randers Resistente Talle L', 'Bicicleta Mountain Bike Randers rodado 29 con 21 velocidades y cuadro de aluminio.Diseñada para acompañarte en tu camino, resistente y funcional, se adapta a tus recorridos por la ciudad como a cualquier sendero haciendo tu experiencia más segura y confortable.Cuenta con horquilla con suspensión Neco H115, regulación y bloque de taza, cambios SHIMANO TZ30, llantas con doble pared de aluminio y mazas con quick release.', 209999, 5, "acb4536", "image5");
+// Prueba 5: Se evaluará que getProductById devuelva error si no encuentra el producto.
+try {
+    const nonExistentProduct = productos.getProductById(999);
+    console.log("Prueba 5:", nonExistentProduct);
+} catch (error) {
+    console.log("Prueba 5:", error.message);
+}
 
-productos.addProducts('Bicicleta Cross Mecano 81 Rojo Rodado 20', 'La bicicleta Cross Mecano 81 en color rojo con rodado 20 es una opción robusta y versátil diseñada para el terreno todoterreno. Con su llamativo color rojo, esta bicicleta no solo es funcional sino también estéticamente atractiva. El rodado de 20 pulgadas proporciona un equilibrio adecuado entre agilidad y estabilidad, lo que la hace adecuada para diversas actividades, desde paseos urbanos hasta aventuras off-road.', 129148, 5, "acb4537", "image6");
-
-// Mostrar la lista completa de productos y un producto específico por ID.
-console.log(productos.getProducts());
-console.log(productos.getProductosById(2));
+// Prueba 6: Se evaluará que getProductById devuelva el producto si lo encuentra.
+const existingProduct = productos.getProductById(1); // Se puede ajustar el ID según el producto que se haya agregado.
+console.log("Prueba 6:", existingProduct);
