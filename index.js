@@ -80,12 +80,12 @@ try {
 
 // Prueba 5: Se evaluará que getProductById devuelva error si no encuentra el producto.
 try {
-    const nonExistentProduct = productos.getProductById(3);
-    console.log("Prueba 5:", nonExistentProduct);
+    const ProductNoExistente = productos.getProductById(3);
+    console.log("Prueba 5:", ProductNoExistente);
 } catch (error) {
     console.log("Prueba 5:", error.message);
 }
 
 // Prueba 6: Se evaluará que getProductById devuelva el producto si lo encuentra.
-const existingProduct = productos.getProductById(1);
-console.log("Prueba 6:", existingProduct);
+const ProductoExistente = productos.getProductById(1);
+console.log("Prueba 6:", ProductoExistente);
